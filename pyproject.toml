@@ -4,4 +4,11 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "adafruit-circuitpython-debouncer>=2.0.13",
+    "adafruit-circuitpython-display-text>=5.0.1",
+    "adafruit-circuitpython-displayio-ssd1306>=3.0.4",
+    "adafruit-circuitpython-neopixel>=6.4.0",
+    "adafruit-ssd1306>=1.6.2",
+    "circuitpython-wiichuck>=0.0.3",
+]

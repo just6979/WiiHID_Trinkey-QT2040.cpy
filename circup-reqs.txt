@@ -1,0 +1,8 @@
+neopixel==6.4.0
+adafruit_displayio_ssd1306==3.0.4
+adafruit_ticks==1.1.6
+adafruit_debouncer==2.0.14
+adafruit_bus_device==5.2.16
+adafruit_register==1.11.2
+wiichuck==0.0.3
+adafruit_display_text==5.0.2
