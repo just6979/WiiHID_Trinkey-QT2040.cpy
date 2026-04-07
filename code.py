@@ -102,7 +102,7 @@ while True:
     boot_button.update()
     if boot_button.rose:
         current_mode += 1
-        if current_mode >= len(MODES): current_mode = 0
+        if current_mode >= len(MODES): current_mode = 0s
         text = MODES[current_mode]
         print(MODES[current_mode])
 
