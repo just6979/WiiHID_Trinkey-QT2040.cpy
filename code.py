@@ -12,23 +12,25 @@ from digitalio import DigitalInOut, Direction
 from i2cdisplaybus import I2CDisplayBus
 from wiichuck.nunchuk import Nunchuk
 
-displayio.release_displays()
+start_time = time.monotonic()
 
 MODES = ['L-Stick', 'D-Pad', 'Mouse']
 current_mode = 1
-
-time.sleep(1)
 
 print(
     f'{board.board_id}: '
     f'UID 0x{microcontroller.cpu.uid.hex()}, '
     f'{microcontroller.cpu.frequency / 1000 / 1000} MHz, '
-    f'{microcontroller.cpu.temperature} C'
+    f'{microcontroller.cpu.temperature:0.1f} °C'
 )
+print('Starting up...')
 
+print(f'Setting up onboard NeoPixel')
 status_neopixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.05)
 status_neopixel.fill(0xFF8800)
+time.sleep(0.5)
 
+print(f'Setting up onboard Button')
 onboard_button = DigitalInOut(board.BUTTON)
 onboard_button.direction = Direction.INPUT
 boot_button = Debouncer(onboard_button)
@@ -41,52 +43,58 @@ devs = [hex(dev) for dev in i2c.scan()]
 print(f'Found {len(devs)} I2C devices: {devs}')
 i2c.unlock()
 
-text_to_show = MODES[current_mode]
-
-display_bus = I2CDisplayBus(i2c, device_address=0x3C,)
-
-WIDTH = 128
-HEIGHT = 32
-BORDER = 5
-display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=WIDTH, height=HEIGHT)
-display.rotation = 180
-
-splash = displayio.Group()
-display.root_group = splash
-
-color_bitmap = displayio.Bitmap(WIDTH, HEIGHT, 1)
-color_palette = displayio.Palette(1)
-color_palette[0] = 0x000000  # White
-
-bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
-splash.append(bg_sprite)
-
-inner_bitmap = displayio.Bitmap(WIDTH - BORDER * 2, HEIGHT - BORDER * 2, 1)
-inner_palette = displayio.Palette(1)
-inner_palette[0] = 0x000000
-inner_sprite = displayio.TileGrid(inner_bitmap, pixel_shader=inner_palette, x=BORDER, y=BORDER)
-splash.append(inner_sprite)
-
-text = MODES[current_mode]
-text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=28, y=HEIGHT // 2 - 1)
-splash.append(text_area)
-
-display.root_group = splash
-
-nunchuk_addr = 0x52
-
-status_neopixel.fill(0x0000FF)
-
+SCREEN_ADDRESS = 0x3C
+DISPLAY_UPDATE_DELAY = 0.016
+last_display_update = 0
+display = None
 try:
-    nunchuk = Nunchuk(i2c, nunchuk_addr)
-    print(f'Found Wii Nunchuck at {nunchuk_addr:#x}')
-except ValueError:
-    print(f'No Wii Nunchuck found at {nunchuk_addr:#x}')
+    display_bus = I2CDisplayBus(i2c, device_address=SCREEN_ADDRESS)
+    display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=128, height=32)
+    display.rotation = 180
+    print(f'Found 128x32 OLED at {SCREEN_ADDRESS:#x}')
+except ValueError as e:
+    print(f'No 128x32 OLED found at {SCREEN_ADDRESS:#x}')
 
-wii_read_delay = 0.002
+
+NUNCHUCK_ADDRESS = 0x52
+WII_READ_DELAY = 0.002
 last_wii_read = 0
+nunchuk = None
+try:
+    nunchuk = Nunchuk(i2c, NUNCHUCK_ADDRESS)
+    print(f'Found Wii Nunchuck at {NUNCHUCK_ADDRESS:#x}')
+except ValueError:
+    print(f'No Wii Nunchuck found at {NUNCHUCK_ADDRESS:#x}')
 
-status_neopixel.fill(0x00FF00)
+if not display and not nunchuk:
+    print('Cannot find Nunchuck or Display')
+    status_neopixel.fill(0xFF0000)
+    while True: time.sleep(10)
+
+text_area = None
+if display:
+    BORDER = 5
+    splash = displayio.Group()
+    display.root_group = splash
+
+    color_bitmap = displayio.Bitmap(display.width, display.height, 1)
+    color_palette = displayio.Palette(1)
+    color_palette[0] = 0xFFFFFF  # White
+
+    bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
+    splash.append(bg_sprite)
+
+    inner_bitmap = displayio.Bitmap(display.width - BORDER * 2, display.height - BORDER * 2, 1)
+    inner_palette = displayio.Palette(1)
+    inner_palette[0] = 0x000000
+    inner_sprite = displayio.TileGrid(inner_bitmap, pixel_shader=inner_palette, x=BORDER, y=BORDER)
+    splash.append(inner_sprite)
+
+    text = MODES[current_mode]
+    text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=28, y=display.height // 2 - 1)
+    splash.append(text_area)
+
+    display.root_group = splash
 
 jx = jy = 127
 ax = ay = az = 0
@@ -96,22 +104,40 @@ pixel_x = 6
 pixel_y = 4
 old_x = old_y = 0
 
+# check the environment every 5 seconds
+ENV_READ_DELAY = 5
+last_env_read = 0
+
+if display or nunchuk:
+    status_neopixel.fill(0x0000FF)
+
+if display and nunchuk:
+    status_neopixel.fill(0x00FF00)
+
+print(f'Setup complete: {time.monotonic() - start_time}s')
+
 while True:
     now = time.monotonic()
 
     boot_button.update()
     if boot_button.rose:
         current_mode += 1
-        if current_mode >= len(MODES): current_mode = 0s
+        if current_mode >= len(MODES): current_mode = 0
         text = MODES[current_mode]
         print(MODES[current_mode])
 
-    if nunchuk and now - last_wii_read >= wii_read_delay:
+    if now - last_env_read >= ENV_READ_DELAY:
+        last_env_read = now
+        print(f'{now:.3f}s: MCU Temp: {microcontroller.cpu.temperature} °C')
+
+    if nunchuk and now - last_wii_read >= WII_READ_DELAY:
         last_wii_read = now
         jx, jy = nunchuk.joystick
         ax, ay, az = nunchuk.acceleration
         jc, jz = nunchuk.buttons
-        msg = f'J[{jx:>3},{jy:>3}] A[{ax:>3},{ay:>3},{az:>3}] [{'Z' if jz else ' '}{'C' if jc else ' '}]'
-        # print(msg)
+        msg = f'[{'Z' if jz else ' '}{'C' if jc else ' '}] J[{jx:>3},{jy:>3}] A[{ax:>3},{ay:>3},{az:>3}]'
+        print(f'{now:.3f}: {msg}')
 
-    text_area.text = MODES[current_mode]
+    if display and now - last_display_update >= DISPLAY_UPDATE_DELAY:
+        last_display_update = now
+        text_area.text = MODES[current_mode]
