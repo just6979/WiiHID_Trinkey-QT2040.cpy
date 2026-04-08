@@ -1,5 +1,5 @@
 Using [Adafruit Trinkey QT2040](https://www.adafruit.com/product/5056),
-[WiiChuck library](https://github.com/madhephaestus/WiiChuck),
+[CircuitPython WiiChuck library](https://github.com/jfurcean/CircuitPython_WiiChuck),
 and various Adafruit Arduino libraries, to turn a Wii Nunchuck
 into a simple joystick/gamepad and* mouse emulator.
 
