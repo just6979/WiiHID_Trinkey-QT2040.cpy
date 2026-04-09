@@ -161,8 +161,9 @@ while True:
         if jy < 127 < jy + deadzone:
             jy = 127
 
-        msg = f'[{'Z' if jz else ' '}{'C' if jc else ' '}] J[{jx:>3},{jy:>3}] A[{ax:>3},{ay:>3},{az:>3}]'
-        print(f'{now:.3f}: {msg}')
+        if jx != 127 or jy != 127 or jz or jc:
+            msg = f'[{'Z' if jz else ' '}{'C' if jc else ' '}] J[{jx:>3},{jy:>3}] A[{ax:>3},{ay:>3},{az:>3}]'
+            print(f'{now:.3f}: {msg}')
 
         if mode == 0:
             gamepad.move_joysticks(jx, jy)
