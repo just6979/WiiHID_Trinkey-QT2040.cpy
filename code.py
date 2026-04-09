@@ -1,13 +1,17 @@
+import gc
 import time
 
-import adafruit_displayio_ssd1306
 import board
 import displayio
 import microcontroller
 import neopixel
 import terminalio
+import usb_hid
+from Gamepad import Gamepad
 from adafruit_debouncer import Debouncer
 from adafruit_display_text import label
+from adafruit_displayio_ssd1306 import SSD1306
+from adafruit_hid.mouse import Mouse
 from digitalio import DigitalInOut, Direction
 from i2cdisplaybus import I2CDisplayBus
 from wiichuck.nunchuk import Nunchuk
@@ -15,7 +19,7 @@ from wiichuck.nunchuk import Nunchuk
 start_time = time.monotonic()
 
 MODES = ['L-Stick', 'D-Pad', 'Mouse']
-current_mode = 1
+mode = 1
 
 print(
     f'{board.board_id}: '
@@ -48,13 +52,13 @@ DISPLAY_UPDATE_DELAY = 0.016
 last_display_update = 0
 display = None
 try:
+    displayio.release_displays()
     display_bus = I2CDisplayBus(i2c, device_address=SCREEN_ADDRESS)
-    display = adafruit_displayio_ssd1306.SSD1306(display_bus, width=128, height=32)
+    display = SSD1306(display_bus, width=128, height=64)
     display.rotation = 180
     print(f'Found 128x32 OLED at {SCREEN_ADDRESS:#x}')
 except ValueError as e:
     print(f'No 128x32 OLED found at {SCREEN_ADDRESS:#x}')
-
 
 NUNCHUCK_ADDRESS = 0x52
 WII_READ_DELAY = 0.002
@@ -90,11 +94,21 @@ if display:
     inner_sprite = displayio.TileGrid(inner_bitmap, pixel_shader=inner_palette, x=BORDER, y=BORDER)
     splash.append(inner_sprite)
 
-    text = MODES[current_mode]
+    text = MODES[mode]
     text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=28, y=display.height // 2 - 1)
     splash.append(text_area)
 
     display.root_group = splash
+
+deadzone = 20
+
+# gamepad = Gamepad(usb_hid.devices)
+
+mouse = Mouse(usb_hid.devices)
+sensitivity = 33
+left_down = False
+right_down = False
+middle_down = False
 
 jx = jy = 127
 ax = ay = az = 0
@@ -115,16 +129,18 @@ if display and nunchuk:
     status_neopixel.fill(0x00FF00)
 
 print(f'Setup complete: {time.monotonic() - start_time}s')
+gc.collect()
+print(gc.mem_free())
 
 while True:
     now = time.monotonic()
 
     boot_button.update()
     if boot_button.rose:
-        current_mode += 1
-        if current_mode >= len(MODES): current_mode = 0
-        text = MODES[current_mode]
-        print(MODES[current_mode])
+        mode += 1
+        if mode >= len(MODES): mode = 0
+        text = MODES[mode]
+        print(MODES[mode])
 
     if now - last_env_read >= ENV_READ_DELAY:
         last_env_read = now
@@ -135,9 +151,45 @@ while True:
         jx, jy = nunchuk.joystick
         ax, ay, az = nunchuk.acceleration
         jc, jz = nunchuk.buttons
+
+        if jx > 127 > jx - deadzone:
+            jx = 127
+        if jx < 127 < jx + deadzone:
+            jx = 127
+        if jy > 127 > jy - deadzone:
+            jy = 127
+        if jy < 127 < jy + deadzone:
+            jy = 127
+
         msg = f'[{'Z' if jz else ' '}{'C' if jc else ' '}] J[{jx:>3},{jy:>3}] A[{ax:>3},{ay:>3},{az:>3}]'
         print(f'{now:.3f}: {msg}')
 
+        if mode == 0:
+            gamepad.move_joysticks(jx, jy)
+
+        if mode == 2:
+            x = (sensitivity * (jx - 127) // 255)
+            y = (sensitivity * (jy - 127) // 255)
+            mouse.move(x, -y)
+            if jz and jc:
+                mouse.press(Mouse.MIDDLE_BUTTON)
+                middle_down = True
+            elif middle_down:
+                mouse.release(Mouse.MIDDLE_BUTTON)
+                middle_down = False
+            if jz:
+                mouse.press(Mouse.LEFT_BUTTON)
+                left_down = True
+            elif left_down:
+                mouse.release(Mouse.LEFT_BUTTON)
+                left_down = False
+            if jc:
+                mouse.press(Mouse.RIGHT_BUTTON)
+                right_down = True
+            elif right_down:
+                mouse.release(Mouse.RIGHT_BUTTON)
+                right_down = False
+
     if display and now - last_display_update >= DISPLAY_UPDATE_DELAY:
         last_display_update = now
-        text_area.text = MODES[current_mode]
+        text_area.text = MODES[mode]

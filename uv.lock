@@ -113,45 +113,15 @@ wheels = [
 ]
 
 [[package]]
-name = "adafruit-circuitpython-framebuf"
-version = "1.6.11"
+name = "adafruit-circuitpython-hid"
+version = "6.1.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "adafruit-blinka" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/56/14/1b79e6a5d4900a05df53b570f435dec85c249f7deab733a49367fbc917f3/adafruit_circuitpython_framebuf-1.6.11.tar.gz", hash = "sha256:fb11083c0f297fdeb4c9cc9db46477bef154beb1b648fa72df94598a031ccb32", size = 34125, upload-time = "2026-03-27T19:10:06.433Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/10/f3/84d83b7cb2806c5f79a1e6984036ba9f373aa2c163514dc2cfc98b938dc2/adafruit_circuitpython_hid-6.1.9.tar.gz", hash = "sha256:857874ccbe175a6dc23892b3da339b563e19a08c6a24e1da83182863fd8f0891", size = 36926, upload-time = "2026-03-27T19:10:26.335Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/59/83/ea4e2506b6d201fa3fc6afa1990b8a4540454dab160b3a9a3d34dd40d9e7/adafruit_circuitpython_framebuf-1.6.11-py3-none-any.whl", hash = "sha256:d25dbea8f4688808287992161102d0455bda7b891b8c056a5a16bf85e3999585", size = 9124, upload-time = "2026-03-27T19:10:05.693Z" },
-]
-
-[[package]]
-name = "adafruit-circuitpython-ht16k33"
-version = "4.6.16"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "adafruit-blinka" },
-    { name = "adafruit-circuitpython-busdevice" },
-    { name = "adafruit-circuitpython-typing" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/62/94/154c8810d745e689591d41dfe15521df2ffbf942343f7af88fe007291149/adafruit_circuitpython_ht16k33-4.6.16.tar.gz", hash = "sha256:b5ad1ea5dd50944e55a4080f3c31e807265cd345afaf9b18410a449f2f8a440d", size = 35618, upload-time = "2026-03-27T18:59:14.445Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/8a/03/fa37e40c63810490f1339d5028f89b4298a1ef64bdd233a9467cfc4f7e40/adafruit_circuitpython_ht16k33-4.6.16-py3-none-any.whl", hash = "sha256:605dc3007c65391aa47b700a465b1c22f32539ecf0540299b942c864039cc270", size = 16241, upload-time = "2026-03-27T18:59:13.574Z" },
-]
-
-[[package]]
-name = "adafruit-circuitpython-is31fl3741"
-version = "1.5.7"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "adafruit-blinka" },
-    { name = "adafruit-circuitpython-busdevice" },
-    { name = "adafruit-circuitpython-framebuf" },
-    { name = "adafruit-circuitpython-register" },
-    { name = "adafruit-circuitpython-typing" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/d3/9d/926b5fdd680c08a2be8d21aefc25d3e39726ea4b944a72ed5f5a52c02d70/adafruit_circuitpython_is31fl3741-1.5.7.tar.gz", hash = "sha256:3949879f35e58686d96fd10264e5c11b53fdfd645bb48729bfd648e097c07001", size = 37604, upload-time = "2026-03-27T19:00:02.6Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/37/0e/e37d018b125f2c5ac2b5704715d0f7ddc2cb3ada94b90a5c2609fa49c147/adafruit_circuitpython_is31fl3741-1.5.7-py3-none-any.whl", hash = "sha256:2f7776508371a45ce55ee085a063d7ebbc8491dd5deaf1401b28e2f9e425a10b", size = 18100, upload-time = "2026-03-27T19:00:01.583Z" },
+    { url = "https://files.pythonhosted.org/packages/cb/c7/2728838266f0d43de5d6a76e8f89b01d1a71eb9ea7e5977e82173a2525d3/adafruit_circuitpython_hid-6.1.9-py3-none-any.whl", hash = "sha256:78733883a6583a85822897dc998065a32f2ad00d9c874c5da905135bc1e83206", size = 18470, upload-time = "2026-03-27T19:10:25.444Z" },
 ]
 
 [[package]]
@@ -180,21 +150,6 @@ wheels = [
 ]
 
 [[package]]
-name = "adafruit-circuitpython-register"
-version = "1.11.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "adafruit-blinka" },
-    { name = "adafruit-circuitpython-busdevice" },
-    { name = "adafruit-circuitpython-typing" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/b2/db/f3703f73377b2bd8ac404863a86154d4e8f47584ce93b8dfa93c20e82012/adafruit_circuitpython_register-1.11.2.tar.gz", hash = "sha256:331310a6973d7b6aeb34fdd276ac55dd442d074a41f687fca618f710cec821ed", size = 31680, upload-time = "2026-03-27T19:14:48.872Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/d7/f4/e014a0de1e71ab0fe21ea0547236fa2fcd9b772438a7cb281098a6a23863/adafruit_circuitpython_register-1.11.2-py3-none-any.whl", hash = "sha256:015e75bb239dc6213d3c33e230b203c39dc5596fa2e5111646f43383d0ad3eea", size = 19004, upload-time = "2026-03-27T19:14:47.667Z" },
-]
-
-[[package]]
 name = "adafruit-circuitpython-requests"
 version = "4.1.16"
 source = { registry = "https://pypi.org/simple" }
@@ -205,35 +160,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/39/58/fc3281a095eb7160da70cf3246c2a588b9727e34d0043f0824fadbd2481a/adafruit_circuitpython_requests-4.1.16.tar.gz", hash = "sha256:de058dad775b44c33eacd09bc012b8f27242c2a5f7ee093c6a6d7d59db141316", size = 67861, upload-time = "2026-03-27T19:14:50.876Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/98/0c/eed0cd48249b9fec654562eca12dd09ac25ef7d091e91065ea846a1267c5/adafruit_circuitpython_requests-4.1.16-py3-none-any.whl", hash = "sha256:57da373508a3f0880db0a951738b81905ac704c989f0bd780deaf4b4b4809fd7", size = 10868, upload-time = "2026-03-27T19:14:49.988Z" },
-]
-
-[[package]]
-name = "adafruit-circuitpython-seesaw"
-version = "1.18.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "adafruit-blinka" },
-    { name = "adafruit-circuitpython-busdevice" },
-    { name = "adafruit-circuitpython-pixelbuf" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/03/c1/24474620512095b58f3ed341fd094992387260ab7f23c17951bf5722397d/adafruit_circuitpython_seesaw-1.18.1.tar.gz", hash = "sha256:1b34efa961c52b57fe54fb30cd61ee09ce21c978a29795354cac3b4e688d4dda", size = 39301, upload-time = "2026-03-27T19:04:00.057Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b9/c9/4936023e4dbcac25cfe3b15199c835b2ee2a03b7faf301fd0fed5d77a8d5/adafruit_circuitpython_seesaw-1.18.1-py3-none-any.whl", hash = "sha256:5d91dc41a316f0e61460fde678c895b74396852c231032809f8ae75fb5db3efa", size = 19987, upload-time = "2026-03-27T19:03:59.091Z" },
-]
-
-[[package]]
-name = "adafruit-circuitpython-tca9548a"
-version = "0.8.5"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "adafruit-blinka" },
-    { name = "adafruit-circuitpython-busdevice" },
-    { name = "adafruit-circuitpython-typing" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/21/99/d5ff716bd7e64f859bdff1c712060542f00d734d8d73ac3fbd2906ef80f1/adafruit_circuitpython_tca9548a-0.8.5.tar.gz", hash = "sha256:14c69868c7a75c02fe5a7d3045bf809e48755e4e5ad7e7f45bf5155067ecf6b8", size = 23463, upload-time = "2026-03-27T19:05:23.32Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/51/d6/4e24a6c6c9b74cf5e7d7cc706ee7a794690acc141cf8b39b6f0c46fded7e/adafruit_circuitpython_tca9548a-0.8.5-py3-none-any.whl", hash = "sha256:39e2a50147dfc76f3d5070b0cacd8f71268085229961338ce404de7567d172bf", size = 5175, upload-time = "2026-03-27T19:05:22.419Z" },
 ]
 
 [[package]]
@@ -384,19 +310,15 @@ wheels = [
 ]
 
 [[package]]
-name = "wiidual-trinkey-qt2040-cpy"
+name = "wiihid-qt-py-sam-cpy"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "adafruit-circuitpython-debouncer" },
     { name = "adafruit-circuitpython-display-text" },
     { name = "adafruit-circuitpython-displayio-ssd1306" },
-    { name = "adafruit-circuitpython-framebuf" },
-    { name = "adafruit-circuitpython-ht16k33" },
-    { name = "adafruit-circuitpython-is31fl3741" },
+    { name = "adafruit-circuitpython-hid" },
     { name = "adafruit-circuitpython-neopixel" },
-    { name = "adafruit-circuitpython-seesaw" },
-    { name = "adafruit-circuitpython-tca9548a" },
     { name = "adafruit-ssd1306" },
     { name = "circuitpython-wiichuck" },
 ]
@@ -406,12 +328,8 @@ requires-dist = [
     { name = "adafruit-circuitpython-debouncer", specifier = ">=2.0.13" },
     { name = "adafruit-circuitpython-display-text", specifier = ">=5.0.1" },
     { name = "adafruit-circuitpython-displayio-ssd1306", specifier = ">=3.0.4" },
-    { name = "adafruit-circuitpython-framebuf", specifier = ">=1.6.11" },
-    { name = "adafruit-circuitpython-ht16k33", specifier = ">=4.6.15" },
-    { name = "adafruit-circuitpython-is31fl3741", specifier = ">=1.5.6" },
-    { name = "adafruit-circuitpython-neopixel", specifier = ">=6.4.0" },
-    { name = "adafruit-circuitpython-seesaw", specifier = ">=1.18.1" },
-    { name = "adafruit-circuitpython-tca9548a", specifier = ">=0.8.4" },
+    { name = "adafruit-circuitpython-hid", specifier = ">=6.1.8" },
+    { name = "adafruit-circuitpython-neopixel", specifier = ">=6.4.1" },
     { name = "adafruit-ssd1306", specifier = ">=1.6.2" },
     { name = "circuitpython-wiichuck", specifier = ">=0.0.3" },
 ]

@@ -1,5 +1,5 @@
 [project]
-name = "wiidual-trinkey-qt2040-cpy"
+name = "wiihid-qt-py-sam-cpy"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -8,6 +8,7 @@ dependencies = [
     "adafruit-circuitpython-debouncer>=2.0.13",
     "adafruit-circuitpython-display-text>=5.0.1",
     "adafruit-circuitpython-displayio-ssd1306>=3.0.4",
+    "adafruit-circuitpython-hid>=6.1.8",
     "adafruit-circuitpython-neopixel>=6.4.0",
     "adafruit-ssd1306>=1.6.2",
     "circuitpython-wiichuck>=0.0.3",
