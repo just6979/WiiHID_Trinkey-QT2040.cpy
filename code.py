@@ -166,7 +166,12 @@ while True:
             print(f'{now:.3f}: {msg}')
 
         if mode == 0:
-            gamepad.move_joysticks(jx, jy)
+            # gamepad.move_joysticks(jx, jy)
+            pass
+
+        if mode == 1:
+            # gamepad.move_dpad(jx, jy)
+            pass
 
         if mode == 2:
             x = (sensitivity * (jx - 127) // 255)
