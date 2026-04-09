@@ -1,28 +1,27 @@
 Using [Adafruit Trinkey QT2040](https://www.adafruit.com/product/5056),
 [CircuitPython WiiChuck library](https://github.com/jfurcean/CircuitPython_WiiChuck),
-and various Adafruit Arduino libraries, to turn a Wii Nunchuck
+and various Adafruit CircuitPython libraries, to turn a Wii Nunchuck
 into a simple joystick/gamepad and* mouse emulator.
 
-Onboard Neopixel indicate modes, which are switch with Button0* on the Trinkey.
+* Modes are switched with Button 0 on the Trinkey.
+  * Button 0 is the only one kept easily accessible in my little stack of
+    Trinkey sandwiched between the Nunchuck adapter and display.
+  * ? Long press or double press for a menu to configure each mode ?
+* Attached OLED (128x32) will display the modes and other info.
 
-**(It's the only button accessible in my little stack with the Trinkey sandwiched between the Nunchuck adapter and a 128x32 QT OLED.)*
-
-Modes:
+* Modes:
   * Nunchuck
     * L-Stick
       * Nunchuck stick Left-stick signals
       * Z sends Button 1 (South, XBox A, Nintendo B, PS Circle)
       * C sends Button 2 (East, XBox B, Nintendo A, PS X)
-    * Gamepad
+    * D-Pad
       * Nunchuck stick sends d-pad/hat signals
-      * Buttons same as L-Stick Mode 
+      * Buttons same as L-Stick Mode
     * Mouse
       * Nunchuck stick sends mouse move signals
         * Z & C buttons send Left & Right clicks, respectively
         * ? Both together send middle click ?
-    * Game
-      * If the IS31FL3741 I2C LED Matrix is attached, use it to play a simple Snake Game
-      * Change direction with stick
     * ? R-Stick ?
       * Same as L-Stick but send Right Stick
       * ? Maybe ?
@@ -44,6 +43,7 @@ Modes:
       * Both sticks and D-pad send mouse movement
       * Full trigger pulls send left & right mouse clicks, either Z button sends middle click
       * Y or Minus: LMB, A or Plus: RMB, X, B, or Home: MMB
+      * ? Maybe ?
       
 *  Neopixel will indicate the mode:
   * Nunchuck
