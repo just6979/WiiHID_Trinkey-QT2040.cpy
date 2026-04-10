@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/WiiDual_Trinkey-QT2040.cpy.iml" filepath="$PROJECT_DIR$/.idea/WiiDual_Trinkey-QT2040.cpy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/WiiHID_Trinkey-QT2040.cpy.iml" filepath="$PROJECT_DIR$/.idea/WiiHID_Trinkey-QT2040.cpy.iml" />
     </modules>
   </component>
 </project>
