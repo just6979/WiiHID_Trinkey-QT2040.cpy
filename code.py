@@ -18,8 +18,18 @@ from wiichuck.nunchuk import Nunchuk
 
 start_time = time.monotonic()
 
+ORANGE = 0xFF8800
+GREEN = 0x00FF00
+BLUE = 0x0000FF
+PURPLE = 0xFF0000
+WHITE = 0xFFFFFF
+BLACK = 0x000000
+
+MODE_L_STICK = 0
+MODE_D_PAD = 1
+MODE_MOUSE = 2
 MODES = ['L-Stick', 'D-Pad', 'Mouse']
-mode = 1
+mode = MODE_L_STICK
 
 print(
     f'{board.board_id}: '
@@ -31,8 +41,7 @@ print('Starting up...')
 
 print(f'Setting up onboard NeoPixel')
 status_neopixel = neopixel.NeoPixel(board.NEOPIXEL, 1, brightness=0.05)
-status_neopixel.fill(0xFF8800)
-time.sleep(0.5)
+status_neopixel.fill(ORANGE)
 
 print(f'Setting up onboard Button')
 onboard_button = DigitalInOut(board.BUTTON)
@@ -40,67 +49,58 @@ onboard_button.direction = Direction.INPUT
 boot_button = Debouncer(onboard_button)
 
 i2c = board.I2C()
-print(f'Opened I2C bus')
+print(f'Scanning I2C bus...')
 i2c.try_lock()
-print(f'Scanning for devices')
-devs = [hex(dev) for dev in i2c.scan()]
+devs = [hex(dev).upper() for dev in i2c.scan()]
 print(f'Found {len(devs)} I2C devices: {devs}')
 i2c.unlock()
 
-SCREEN_ADDRESS = 0x3C
-DISPLAY_UPDATE_DELAY = 0.016
-last_display_update = 0
+DISPLAY_ADDRESS = 0x3C
+DISPLAY_WIDTH = 128
+DISPLAY_HEIGHT = 32
 display = None
 try:
     displayio.release_displays()
-    display_bus = I2CDisplayBus(i2c, device_address=SCREEN_ADDRESS)
-    display = SSD1306(display_bus, width=128, height=64)
-    display.rotation = 180
-    print(f'Found 128x32 OLED at {SCREEN_ADDRESS:#x}')
+    display_bus = I2CDisplayBus(i2c, device_address=DISPLAY_ADDRESS)
+    display = SSD1306(display_bus, width=DISPLAY_WIDTH, height=DISPLAY_HEIGHT)
+    print(f'Found 128x32 OLED at {DISPLAY_ADDRESS:#X}')
 except ValueError as e:
-    print(f'No 128x32 OLED found at {SCREEN_ADDRESS:#x}')
-
-NUNCHUCK_ADDRESS = 0x52
-WII_READ_DELAY = 0.002
-last_wii_read = 0
-nunchuk = None
-try:
-    nunchuk = Nunchuk(i2c, NUNCHUCK_ADDRESS)
-    print(f'Found Wii Nunchuck at {NUNCHUCK_ADDRESS:#x}')
-except ValueError:
-    print(f'No Wii Nunchuck found at {NUNCHUCK_ADDRESS:#x}')
-
-if not display and not nunchuk:
-    print('Cannot find Nunchuck or Display')
-    status_neopixel.fill(0xFF0000)
-    while True: time.sleep(10)
+    print(f'No 128x32 OLED found at {DISPLAY_ADDRESS:#X}')
 
 text_area = None
 if display:
-    BORDER = 5
-    splash = displayio.Group()
-    display.root_group = splash
+    root_group = displayio.Group()
+    text_area = label.Label(
+        terminalio.FONT,
+        text=(MODES[mode]),
+        color=WHITE,
+        x=4,
+        y=display.height // 2
+    )
+    root_group.append(text_area)
+    display.root_group = root_group
 
-    color_bitmap = displayio.Bitmap(display.width, display.height, 1)
-    color_palette = displayio.Palette(1)
-    color_palette[0] = 0xFFFFFF  # White
+NUNCHUCK_ADDRESS = 0x52
+nunchuk = None
+try:
+    nunchuk = Nunchuk(i2c, NUNCHUCK_ADDRESS)
+    print(f'Found Wii Nunchuck at {NUNCHUCK_ADDRESS:#X}')
+except ValueError:
+    print(f'No Wii Nunchuck found at {NUNCHUCK_ADDRESS:#X}')
 
-    bg_sprite = displayio.TileGrid(color_bitmap, pixel_shader=color_palette, x=0, y=0)
-    splash.append(bg_sprite)
+if not nunchuk:
+    if not display:
+        print('No Nunchuck nor Display')
+        status_neopixel.fill(PURPLE)
+        while True: time.sleep(10)
+    else:
+        msg = 'No Nunchuck'
+        print(msg)
+        text_area.text = msg
+        status_neopixel.fill(PURPLE)
+        while True: time.sleep(10)
 
-    inner_bitmap = displayio.Bitmap(display.width - BORDER * 2, display.height - BORDER * 2, 1)
-    inner_palette = displayio.Palette(1)
-    inner_palette[0] = 0x000000
-    inner_sprite = displayio.TileGrid(inner_bitmap, pixel_shader=inner_palette, x=BORDER, y=BORDER)
-    splash.append(inner_sprite)
-
-    text = MODES[mode]
-    text_area = label.Label(terminalio.FONT, text=text, color=0xFFFFFF, x=28, y=display.height // 2 - 1)
-    splash.append(text_area)
-
-    display.root_group = splash
-
-deadzone = 20
+deadzone = 10
 
 # gamepad = Gamepad(usb_hid.devices)
 
@@ -114,23 +114,24 @@ jx = jy = 127
 ax = ay = az = 0
 jz = jc = False
 
-pixel_x = 6
-pixel_y = 4
-old_x = old_y = 0
-
 # check the environment every 5 seconds
 ENV_READ_DELAY = 5
 last_env_read = 0
 
 if display or nunchuk:
-    status_neopixel.fill(0x0000FF)
+    status_neopixel.fill(BLUE)
 
 if display and nunchuk:
-    status_neopixel.fill(0x00FF00)
+    status_neopixel.fill(GREEN)
 
-print(f'Setup complete: {time.monotonic() - start_time}s')
+print(f'Setup complete: {time.monotonic() - start_time // 1000} ms')
 gc.collect()
-print(gc.mem_free())
+print(f'Free Memory: {gc.mem_free() // 1024} KB')
+
+DISPLAY_UPDATE_DELAY = 0.016
+WII_READ_DELAY = 0.002
+last_display_update = 0
+last_wii_read = 0
 
 while True:
     now = time.monotonic()
@@ -144,7 +145,7 @@ while True:
 
     if now - last_env_read >= ENV_READ_DELAY:
         last_env_read = now
-        print(f'{now:.3f}s: MCU Temp: {microcontroller.cpu.temperature} °C')
+        print(f'{now:.3f}s: MCU Temp: {microcontroller.cpu.temperature:.1f} °C')
 
     if nunchuk and now - last_wii_read >= WII_READ_DELAY:
         last_wii_read = now
