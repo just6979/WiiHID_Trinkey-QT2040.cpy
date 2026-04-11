@@ -7,7 +7,7 @@ import microcontroller
 import neopixel
 import terminalio
 import usb_hid
-from Gamepad import Gamepad
+from hid_gamepad import Gamepad
 from adafruit_debouncer import Debouncer
 from adafruit_display_text import label
 from adafruit_displayio_ssd1306 import SSD1306
@@ -74,8 +74,8 @@ if display:
         terminalio.FONT,
         text=(MODES[mode]),
         color=WHITE,
-        x=4,
-        y=display.height // 2
+        x=6,
+        y=12
     )
     root_group.append(text_area)
     display.root_group = root_group
@@ -102,7 +102,7 @@ if not nunchuk:
 
 deadzone = 10
 
-# gamepad = Gamepad(usb_hid.devices)
+gamepad = Gamepad(usb_hid.devices)
 
 mouse = Mouse(usb_hid.devices)
 sensitivity = 33
@@ -139,8 +139,10 @@ while True:
     boot_button.update()
     if boot_button.rose:
         mode += 1
+        # TODO: implement d-pad in hid_gamepad.py
+        if mode == MODE_D_PAD: mode += 1
         if mode >= len(MODES): mode = 0
-        text = MODES[mode]
+        text_area.text = MODES[mode]
         print(MODES[mode])
 
     if now - last_env_read >= ENV_READ_DELAY:
@@ -162,21 +164,33 @@ while True:
         if jy < 127 < jy + deadzone:
             jy = 127
 
-        if jx != 127 or jy != 127 or jz or jc:
-            msg = f'[{'Z' if jz else ' '}{'C' if jc else ' '}] J[{jx:>3},{jy:>3}] A[{ax:>3},{ay:>3},{az:>3}]'
+        # normalize axis values between -127 to 127
+        jx -= 127
+        jy -= 127
+        if jx > 127: jx = 127
+        if jy > 127: jy = 127
+
+        if jx != 0 or jy != 0 or jz or jc:
+            msg = f'[{'Z' if jz else ' '}{'C' if jc else ' '}] J[{jx: 4},{jy: 4}] A[{ax:3},{ay:3},{az:3}]'
             print(f'{now:.3f}: {msg}')
 
-        if mode == 0:
-            # gamepad.move_joysticks(jx, jy)
-            pass
+        if mode == MODE_L_STICK:
+            if jz:
+                gamepad.press_buttons(1)
+            else:
+                gamepad.release_buttons(1)
+            if jc:
+                gamepad.press_buttons(2)
+            else:
+                gamepad.release_buttons(2)
+            gamepad.move_joysticks(jx, jy)
 
-        if mode == 1:
-            # gamepad.move_dpad(jx, jy)
-            pass
+        # if mode == MODE_D_PAD:
+        #     gamepad.move_dpad(jx, jy)
 
-        if mode == 2:
-            x = (sensitivity * (jx - 127) // 255)
-            y = (sensitivity * (jy - 127) // 255)
+        if mode == MODE_MOUSE:
+            x = (sensitivity * (jx) // 255)
+            y = (sensitivity * (jy) // 255)
             mouse.move(x, -y)
             if jz and jc:
                 mouse.press(Mouse.MIDDLE_BUTTON)
@@ -197,6 +211,6 @@ while True:
                 mouse.release(Mouse.RIGHT_BUTTON)
                 right_down = False
 
-    if display and now - last_display_update >= DISPLAY_UPDATE_DELAY:
-        last_display_update = now
-        text_area.text = MODES[mode]
+    # if display and now - last_display_update >= DISPLAY_UPDATE_DELAY:
+    #     last_display_update = now
+    #     text_area.text = f'{MODES[mode]}\n[{'Z' if jz else ' '}{'C' if jc else ' '}] [{jx: 4},{jy: 4}]'
