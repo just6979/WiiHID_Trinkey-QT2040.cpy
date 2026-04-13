@@ -170,6 +170,9 @@ while True:
         if jx > 127: jx = 127
         if jy > 127: jy = 127
 
+        # flip y-axis values to match modern gamepad HID
+        jy *= -1
+
         if jx != 0 or jy != 0 or jz or jc:
             msg = f'[{'Z' if jz else ' '}{'C' if jc else ' '}] J[{jx: 4},{jy: 4}] A[{ax:3},{ay:3},{az:3}]'
             print(f'{now:.3f}: {msg}')
